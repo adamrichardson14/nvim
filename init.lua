@@ -23,8 +23,8 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 12
 vim.opt.hlsearch = true
 -- Start Keymaps
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
@@ -197,6 +197,8 @@ require('lazy').setup({
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+
           map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
           map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
           map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
@@ -209,7 +211,6 @@ require('lazy').setup({
 
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client.server_capabilities.documentHighlightProvider then
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -242,19 +243,18 @@ require('lazy').setup({
         rust_analyzer = {},
         tsserver = {},
         lua_ls = {
-          settings = {
-            Lua = {
-              runtime = { version = 'LuaJIT' },
-              workspace = {
-                checkThirdParty = false,
-                library = {
-                  '${3rd}/luv/library',
-                  unpack(vim.api.nvim_get_runtime_file('', true)),
-                },
+          Lua = {
+            runtime = { version = 'LuaJIT' },
+            hint = { enable = true },
+            workspace = {
+              checkThirdParty = false,
+              library = {
+                '${3rd}/luv/library',
+                unpack(vim.api.nvim_get_runtime_file('', true)),
               },
-              completion = {
-                callSnippet = 'Replace',
-              },
+            },
+            completion = {
+              callSnippet = 'Replace',
             },
           },
         },
@@ -303,7 +303,7 @@ require('lazy').setup({
       },
       formatters_by_ft = {
         lua = { 'stylua' },
-        python = { 'isort', 'black' },
+        python = { 'pyright' },
         javascript = { { 'prettierd', 'prettier' } },
         typescript = { { 'prettierd', 'prettier' } },
         javascriptreact = { { 'prettierd', 'prettier' } },
