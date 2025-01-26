@@ -226,24 +226,35 @@ require('lazy').setup({
       })
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+      capabilities = vim.tbl_deep_extend('force', capabilities, {
+        offsetEncoding = { 'utf-16' },
+      }, require('cmp_nvim_lsp').default_capabilities())
 
-      --  Add any additional override configuration in the following tables. Available keys are:
-      --  - cmd (table): Override the default command used to start the server
-      --  - filetypes (table): Override the default list of associated filetypes for the server
-      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-      --  - settings (table): Override the default settings passed when initializing the server.
       local servers = {
-        clangd = {},
-        gopls = {},
+        clangd = {
+          filetypes = { 'c', 'cpp', 'objc', 'objcpp' },
+        },
+        yamlls = {
+          format = { enable = true },
+        },
+        gopls = { filetypes = { 'go' } },
         marksman = {},
         tailwindcss = {},
         bashls = {},
         pyright = {},
-        rust_analyzer = {},
-        tsserver = {},
+        rust_analyzer = {
+          filetypes = { 'rust' },
+        },
+        ts_ls = {
+          filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+        },
+        sqlls = {
+          cmd = { 'sql-language-server', 'up', '--method', 'stdio' },
+          filetypes = { 'sql' },
+        },
         lua_ls = {
           Lua = {
+            diagnostics = { globals = { 'vim' } },
             runtime = { version = 'LuaJIT' },
             hint = { enable = true },
             workspace = {
@@ -302,7 +313,10 @@ require('lazy').setup({
         lsp_fallback = true,
       },
       formatters_by_ft = {
+        yaml = { 'prettierd' },
+        yml = { 'prettierd' },
         lua = { 'stylua' },
+        sql = { 'sql_formatter' },
         python = { 'pyright' },
         javascript = { { 'prettierd', 'prettier' } },
         typescript = { { 'prettierd', 'prettier' } },
